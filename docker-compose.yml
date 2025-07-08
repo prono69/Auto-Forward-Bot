@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  pyrogram-bot:
+    build: .
+    container_name: pyrogram_forwarder
+    restart: unless-stopped
+    volumes:
+      - .:/app
+    environment:
+      - TZ=Asia/Kolkata  # Adjust to your timezone
