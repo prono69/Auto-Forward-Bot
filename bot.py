@@ -18,7 +18,7 @@ app = Client("forwarder_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TO
 media_group_buffer = defaultdict(list)
 media_group_tasks = {}
 
-@app.on_message(filters.chat(FORWARD_MAP.keys()))
+@app.on_message(filters.chat(list(FORWARD_MAP.keys())))
 async def forward_handler(client: Client, message: Message):
     src_chat_id = message.chat.id
     dst_chat_id = FORWARD_MAP[src_chat_id]
