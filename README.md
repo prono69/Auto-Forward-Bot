@@ -38,6 +38,7 @@ Edit `config.py` to define your Telegram API credentials and forward rules:
 API_ID = 123456
 API_HASH = "your_api_hash"
 BOT_TOKEN = "your_bot_token"
+OWNER_ID = [123456789, 987654321] # Replace with your actual Telegram user IDs
 
 FORWARD_MAP = {
     -1001234567890: -1009876543210,  # A ➝ B
@@ -97,7 +98,7 @@ docker-compose down
 
 ### ❤️ Credits
 
-- Built with [Pyroblack](https://eymarv.github.io/pyroblack-docs/main/)
+- Built with [PyroFork](https://pyrofork.wulan17.dev/main/)
 - Uses `copy_media_group()` and `message.copy()` for best forwarding behavior
 - Inspired by real-world automation needs!
 
