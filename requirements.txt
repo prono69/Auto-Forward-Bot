@@ -1,2 +1,2 @@
-pyroblack
-tgcrypto-pyroblack
+pyrofork
+tgcrypto-pyrofork
