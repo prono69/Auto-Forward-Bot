@@ -49,7 +49,7 @@ async def send_album_group(client: Client, src_chat_id: int, dst_chat_id: int, g
         await client.copy_media_group(
             chat_id=dst_chat_id,
             from_chat_id=src_chat_id,
-            message_id=messages[0].message_id
+            message_id=messages[0].id
         )
     except Exception as e:
         logger.error(f"❌ Error forwarding album (group_id={group_id}): {e}")
