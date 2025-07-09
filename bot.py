@@ -10,10 +10,15 @@ from config import API_ID, API_HASH, BOT_TOKEN, OWNER_ID, STICKER_IDS
 from map_utils import load_map, add_mapping
 
 # Basic config: logs to console with timestamps & levels
-# logging.basicConfig(
-#    level=logging.INFO,
-#    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-#)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    handlers=[
+        logging.FileHandler("logs.txt"),
+        logging.StreamHandler()
+    ]
+)
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +58,7 @@ async def start_cmd(client, message):
 @app.on_message(filters.command("logs") & filters.user(OWNER_ID))
 async def send_logs(client, message):
     try:
-        await message.reply_document("log.txt", caption="🗂️ Log file")
+        await message.reply_document("logs.txt", caption="🗂️ Log file")
     except Exception as e:
         await message.reply_text(f"❌ Couldn't send logs: `{e}`")
         

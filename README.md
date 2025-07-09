@@ -21,7 +21,9 @@ A Telegram bot built using **Pyrogram** that can forward **messages and media al
 ```
 .
 ├── main.py                # Bot logic
-├── config.py              # Config with source ➝ target mappings
+├── config.py              # Bot configs
+├── map_utils.py           # Map logic
+├── mappings.json          # Json with source ➝ target mappings
 ├── requirements.txt       # Python dependencies
 ├── Dockerfile             # Docker image definition
 ├── docker-compose.yml     # Docker Compose setup
@@ -40,10 +42,6 @@ API_HASH = "your_api_hash"
 BOT_TOKEN = "your_bot_token"
 OWNER_ID = [123456789, 987654321] # Replace with your actual Telegram user IDs
 
-FORWARD_MAP = {
-    -1001234567890: -1009876543210,  # A ➝ B
-    -1001122334455: -1005544332211,  # C ➝ D
-}
 ```
 
 > 🔁 Use **channel/group IDs** (must be numeric). You can get IDs using bots like [@getidsbot](https://t.me/getidsbot)
