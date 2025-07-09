@@ -1,8 +1,13 @@
-# 📦 Pyrogram Forwarder Bot
+# 📦 Auto Forwarder Bot
+
+<p align="center">
+  <img src="https://media.giphy.com/media/zOvBKUUEERdNm/giphy.gif" alt="Bot Preview" width="500"/>
+</p>
 
 A Telegram bot built using **Pyrogram** that can forward **messages and media albums** from multiple source chats to target chats — intelligently, reliably, and with Docker support 🚀
 
 ---
+
 
 ### ✨ Features
 
@@ -13,6 +18,14 @@ A Telegram bot built using **Pyrogram** that can forward **messages and media al
 - 💬 Also supports **text-only** messages
 - 🐳 Runs inside **Docker** or with **docker-compose**
 - 🔐 Clean logging and graceful shutdowns
+
+---
+
+### ❓ Why This Bot?
+
+> _Because albums deserve better._
+
+_There are tons of forwarding bots — but most of them ruin media albums. This one doesn’t. Built to forward like a pro, without turning your albums into a slideshow gone wrong._
 
 ---
 
@@ -40,8 +53,7 @@ Edit `config.py` to define your Telegram API credentials and forward rules:
 API_ID = 123456
 API_HASH = "your_api_hash"
 BOT_TOKEN = "your_bot_token"
-OWNER_ID = [123456789, 987654321] # Replace with your actual Telegram user IDs
-
+OWNER_ID = [123456789, 987654321]  # Replace with your actual Telegram user IDs
 ```
 
 > 🔁 Use **channel/group IDs** (must be numeric). You can get IDs using bots like [@getidsbot](https://t.me/getidsbot)
@@ -91,6 +103,13 @@ docker-compose down
 2025-07-08 16:05:47 - INFO - __main__ - Forwarded text message
 2025-07-08 16:06:14 - INFO - __main__ - Bot Stopped
 ```
+
+---
+
+### 🤝 Contributing
+
+Have an idea or a feature request? PRs are **most welcome**!  
+Feel free to fork, experiment, and open a pull request — let’s make this bot even better together 💡
 
 ---
 
