@@ -22,6 +22,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Suppress verbose logs from Pyrogram internals
+logging.getLogger("pyrogram").setLevel(logging.WARNING)
+logging.getLogger("pyrogram.session.session").setLevel(logging.WARNING)
+logging.getLogger("pyrogram.connection.connection").setLevel(logging.WARNING)
+
 app = Client("forwarder_bot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 
 media_group_buffer = defaultdict(list)
@@ -193,8 +198,11 @@ async def forward_handler(client: Client, message: Message):
     else:
         # Handle single message or media
         try:
-            if message.text or message.caption:
-                await message.copy(chat_id=dst_chat_id, caption=message.caption or None)
+            await message.copy(chat_id=dst_chat_id)
+        except FloodWait as e:
+            logger.warning(f"🌊 FloodWait: sleeping for {e.value}s")
+            await asyncio.sleep(e.value)
+            await message.copy(chat_id=dst_chat_id)
         except Exception as e:
             logger.error(f"❌ Error forwarding single message: {e}")
 
