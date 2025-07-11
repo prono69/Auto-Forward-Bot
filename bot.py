@@ -171,9 +171,13 @@ async def execution(client, message):
     await status_message.delete()
 
 # Main forward handler
-@app.on_message(filters.chat(list(FORWARD_MAP.keys())))
+@app.on_message()
 async def forward_handler(client: Client, message: Message):
-    src_chat_id = message.chat.id
+    src_chat_id = str(message.chat.id)
+
+    if src_chat_id not in FORWARD_MAP:
+        return  # ❌ Not a mapped source
+    
     dst_chat_id = FORWARD_MAP[src_chat_id]
 
     # Handle media group (album)
