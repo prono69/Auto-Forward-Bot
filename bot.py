@@ -213,10 +213,10 @@ async def forward_handler(client: Client, message: Message):
 
 
 async def handle_album_group(client, src_chat_id, dst_chat_id, group_id):
-    await asyncio.sleep(2.5)  # Let Telegram finish sending all parts
+    # await asyncio.sleep(2.5)  # Let Telegram finish sending all parts
 
     messages = media_group_buffer[group_id]
-    messages = sorted(messages, key=lambda x: x.id)  # Ensure order
+    # messages = sorted(messages, key=lambda x: x.id)  # Ensure order
 
     try:
         await client.copy_media_group(
