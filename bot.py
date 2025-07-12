@@ -183,6 +183,10 @@ async def forward_handler(client: Client, message: Message):
     if src_chat_id not in FORWARD_MAP:
         return  # ❌ Not a mapped source
     
+    # ✅ Skip bot commands like /start or .start
+    if message.text and message.text.startswith(("/", ".")):
+        return
+    
     dst_chat_id = FORWARD_MAP[src_chat_id]
 
     # Handle media group (album)
