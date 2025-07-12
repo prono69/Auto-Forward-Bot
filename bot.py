@@ -181,50 +181,65 @@ async def forward_handler(client: Client, message: Message):
     src_chat_id = str(message.chat.id)
 
     if src_chat_id not in FORWARD_MAP:
-        return  # ❌ Not a mapped source
-    
-    # ✅ Skip bot commands like /start or .start
+        return
+
+    # Ignore bot commands
     if message.text and message.text.startswith(("/", ".")):
         return
-    
+
     dst_chat_id = FORWARD_MAP[src_chat_id]
 
-    # Handle media group (album)
+    # 🧩 Handle albums
     if message.media_group_id:
-        group_id = message.media_group_id
+        group_id = f"{src_chat_id}:{message.media_group_id}"
         media_group_buffer[group_id].append(message)
 
+        # Trigger album only once per group
         if group_id not in media_group_tasks:
             media_group_tasks[group_id] = asyncio.create_task(
-                send_album_group(client, src_chat_id, dst_chat_id, group_id)
+                handle_album_group(client, src_chat_id, dst_chat_id, group_id)
             )
 
     else:
-        # Handle single message or media
+        # 🔁 Forward normal message/media
         try:
             await message.copy(chat_id=dst_chat_id)
         except FloodWait as e:
-            logger.warning(f"🌊 FloodWait: sleeping for {e.value}s")
+            logger.warning(f"🌊 FloodWait: sleeping {e.value}s")
             await asyncio.sleep(e.value)
             await message.copy(chat_id=dst_chat_id)
         except Exception as e:
             logger.error(f"❌ Error forwarding single message: {e}")
 
-async def send_album_group(client: Client, src_chat_id: int, dst_chat_id: int, group_id: str):
-    await asyncio.sleep(1.5)  # Wait for album to complete
+
+async def handle_album_group(client, src_chat_id, dst_chat_id, group_id):
+    await asyncio.sleep(2.5)  # Let Telegram finish sending all parts
 
     messages = media_group_buffer[group_id]
+    messages = sorted(messages, key=lambda x: x.id)  # Ensure order
+
     try:
         await client.copy_media_group(
             chat_id=dst_chat_id,
             from_chat_id=src_chat_id,
             message_id=messages[0].id
         )
+        logger.info(f"📸 Forwarded album with {len(messages)} items")
+    except FloodWait as e:
+        logger.warning(f"🌊 FloodWait in album: sleeping {e.value}s")
+        await asyncio.sleep(e.value)
+        await client.copy_media_group(
+            chat_id=dst_chat_id,
+            from_chat_id=src_chat_id,
+            message_id=messages[0].id
+        )
     except Exception as e:
-        logger.error(f"❌ Error forwarding album (group_id={group_id}): {e}")
+        logger.error(f"❌ Error forwarding album: {e}")
     finally:
+        # Cleanup
         media_group_buffer.pop(group_id, None)
         media_group_tasks.pop(group_id, None)
+
 
 if __name__ == "__main__":
     try:
