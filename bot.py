@@ -191,15 +191,18 @@ async def forward_handler(client: Client, message: Message):
 
     # 🧩 Handle albums
     if message.media_group_id:
-        group_id = f"{src_chat_id}:{message.media_group_id}"
-        media_group_buffer[group_id].append(message)
-
-        # Trigger album only once per group
-        if group_id not in media_group_tasks:
+        # Create a unique group ID using chat_id + media_group_id + first message date
+        group_id = f"{src_chat_id}:{message.media_group_id}:{message.date}"
+        
+        # Initialize buffer if not exists
+        if group_id not in media_group_buffer:
+            media_group_buffer[group_id] = []
+            # Schedule album processing after a short delay
             media_group_tasks[group_id] = asyncio.create_task(
                 handle_album_group(client, src_chat_id, dst_chat_id, group_id)
             )
-
+        
+        media_group_buffer[group_id].append(message)
     else:
         # 🔁 Forward normal message/media
         try:
@@ -213,6 +216,40 @@ async def forward_handler(client: Client, message: Message):
 
 
 async def handle_album_group(client, src_chat_id, dst_chat_id, group_id):
+    # Wait longer when receiving rapid albums
+    await asyncio.sleep(4)  # Increased delay for rapid albums
+    
+    messages = media_group_buffer.get(group_id, [])
+    if not messages:
+        return
+
+    # Sort by message ID to ensure correct order
+    messages.sort(key=lambda x: x.id)
+    
+    try:
+        await client.copy_media_group(
+            chat_id=dst_chat_id,
+            from_chat_id=src_chat_id,
+            message_id=messages[0].id
+        )
+        logger.info(f"📸 Forwarded album with {len(messages)} items (Group ID: {group_id})")
+    except FloodWait as e:
+        logger.warning(f"🌊 FloodWait in album: sleeping {e.value}s")
+        await asyncio.sleep(e.value)
+        await client.copy_media_group(
+            chat_id=dst_chat_id,
+            from_chat_id=src_chat_id,
+            message_id=messages[0].id
+        )
+    except Exception as e:
+        logger.error(f"❌ Error forwarding album: {e}")
+    finally:
+        # Cleanup
+        media_group_buffer.pop(group_id, None)
+        media_group_tasks.pop(group_id, None)
+
+
+async def lol_handle_album_group(client, src_chat_id, dst_chat_id, group_id):
     # await asyncio.sleep(2.5)  # Let Telegram finish sending all parts
 
     messages = media_group_buffer[group_id]
